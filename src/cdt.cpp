@@ -40,6 +40,16 @@ namespace p2t_cgal
             }
             mCdt.insert_constraint(polygon1.begin(), polygon1.end(), true);
 
+            for (size_t i = 0; i < mHoles.size(); ++i)
+            {
+                CDTContext::Polygon_2 polygon1;
+                for (size_t j = 0; j < mHoles[i].size(); ++j)
+                {
+                    polygon1.push_back(CDTContext::Point(mHoles[i][j].x, mHoles[i][j].y));
+                }
+                mCdt.insert_constraint(polygon1.begin(), polygon1.end(), true);
+            }
+
             std::unordered_map<Face_handle, bool> in_domain_map;
             boost::associative_property_map< std::unordered_map<Face_handle, bool> >
                 in_domain(in_domain_map);
@@ -99,16 +109,20 @@ namespace p2t_cgal
     }
 }
 
-//void main()
-//{
-//    std::vector<p2t_cgal::Point> tPolyline;
-//    tPolyline.emplace_back(p2t_cgal::Point{ 0, 0 });
-//    tPolyline.emplace_back(p2t_cgal::Point{ 2, 0 });
-//    tPolyline.emplace_back(p2t_cgal::Point{ 2, 2 });
-//    tPolyline.emplace_back(p2t_cgal::Point{ 1, 1.75 });
-//    tPolyline.emplace_back(p2t_cgal::Point{ 0, 2 });
-//    p2t_cgal::CDT tCdt(tPolyline);
-//
-//    tCdt.Triangulate();
-//
-//}
+#ifdef POLY2TRI_BUILD_AS_EXECUTABLE
+void main()
+{
+    std::vector<p2t_cgal::Point> tPolyline;
+    tPolyline.emplace_back(p2t_cgal::Point{ 0, 0 });
+    tPolyline.emplace_back(p2t_cgal::Point{ 2, 0 });
+    tPolyline.emplace_back(p2t_cgal::Point{ 2, 2 });
+    tPolyline.emplace_back(p2t_cgal::Point{ 1, 1.75 });
+    tPolyline.emplace_back(p2t_cgal::Point{ 0, 2 });
+
+    p2t_cgal::CDT tCdt(tPolyline);
+
+    tCdt.Triangulate();
+
+    tCdt.GetTriangles();
+}
+#endif // POLY2TRI_BUILD_AS_EXECUTABLE

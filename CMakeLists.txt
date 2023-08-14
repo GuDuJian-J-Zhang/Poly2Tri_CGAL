@@ -49,8 +49,6 @@ set(BOOST_DIR "C:/gudujian/boost_1_82_0/boost_1_82_0")
 include_directories(${BOOST_DIR})
 # end add boost
 
-add_definitions( -DPOLY2TRI_BUILD_DLL )
-
 file(GLOB_RECURSE SOURCES 
     ${SOURCE_DIR}/*.cpp 
     ${SOURCE_DIR}/*.c
@@ -58,6 +56,11 @@ file(GLOB_RECURSE SOURCES
     ${INC_DIR}/*.h
 )
 
-# # add the executable
-# add_executable(${ProjectName} ${SOURCES})
-add_library(${ProjectName} SHARED ${SOURCES})
+option(BUILD_SHARED_LIBS FALSE "If TRUE will build as shared lib")
+if (BUILD_SHARED_LIBS)
+    add_definitions( -DPOLY2TRI_BUILD_DLL )
+    add_library(${ProjectName} SHARED ${SOURCES})
+else()
+    add_definitions( -DPOLY2TRI_BUILD_AS_EXECUTABLE )
+    add_executable(${ProjectName} ${SOURCES})
+endif()
