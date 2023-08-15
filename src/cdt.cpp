@@ -6,6 +6,8 @@
 #include <CGAL/mark_domain_in_triangulation.h>
 #include <CGAL/Polygon_2.h>
 
+#include <iostream>
+
 namespace p2t_cgal
 {
     struct CDTContext
@@ -42,12 +44,12 @@ namespace p2t_cgal
 
             for (size_t i = 0; i < mHoles.size(); ++i)
             {
-                CDTContext::Polygon_2 polygon1;
+                CDTContext::Polygon_2 hole1;
                 for (size_t j = 0; j < mHoles[i].size(); ++j)
                 {
-                    polygon1.push_back(CDTContext::Point(mHoles[i][j].x, mHoles[i][j].y));
+                    hole1.push_back(CDTContext::Point(mHoles[i][j].x, mHoles[i][j].y));
                 }
-                mCdt.insert_constraint(polygon1.begin(), polygon1.end(), true);
+                mCdt.insert_constraint(hole1.begin(), hole1.end(), true);
             }
 
             std::unordered_map<Face_handle, bool> in_domain_map;
@@ -107,6 +109,32 @@ namespace p2t_cgal
     {
         return mpContext->mMesh;
     }
+    
+    bool CDT::WriteToSTL(const std::string& filePath) const
+    {
+        if (!mpContext)
+        {
+            return false;
+        }
+
+        std::ofstream file(filePath);
+
+        file << "solid" << " " << "Polygon to Triangle Based On CGAL" << std::endl;
+        for (const auto& t : mpContext->mMesh) {
+            file << "\t" << "facet normal" << " " << 0.0 << " " << 0.0 << " " << 0.0 << std::endl;
+            file << "\t\t" << "outer loop" << std::endl;
+            for (int i = 0; i < 3; ++i)
+            {
+                file << "\t\t\t" << " " << "vertex" << " " << t.mPoints[i].x << " " << t.mPoints[i].y << " " << t.mPoints[i].z << std::endl;
+            }
+            file << "\t\t" << "endloop" << std::endl;
+            file << "\t" << "endfacet" << std::endl;
+        }
+        file << "endsolid" << " " << "Polygon to Triangle Based On CGAL" << std::endl;
+
+        file.close();
+        return true;
+    }
 }
 
 #ifdef POLY2TRI_BUILD_AS_EXECUTABLE
@@ -121,8 +149,26 @@ void main()
 
     p2t_cgal::CDT tCdt(tPolyline);
 
+    std::vector<p2t_cgal::Point> tPolyline2;
+    tPolyline2.push_back(p2t_cgal::Point{ 0.5, 0.5 });
+    tPolyline2.push_back(p2t_cgal::Point{ 0.5, 0.5 });
+    tPolyline2.push_back(p2t_cgal::Point{ 0.5, 0.5 });
+    tPolyline2.push_back(p2t_cgal::Point{ 1.5, 0.5 });
+    tPolyline2.push_back(p2t_cgal::Point{ 1.5, 1.5 });
+    tPolyline2.push_back(p2t_cgal::Point{ 1.5, 1.5 });
+    tPolyline2.push_back(p2t_cgal::Point{ 1.5, 1.5 });
+    tPolyline2.push_back(p2t_cgal::Point{ 1.5, 1.5 });
+    tPolyline2.emplace_back(p2t_cgal::Point{ 1, 1.75 });
+    tPolyline2.push_back(p2t_cgal::Point{ 0.5, 1.5 });
+    tPolyline2.push_back(p2t_cgal::Point{ 0.5, 1.5 });
+    tPolyline2.push_back(p2t_cgal::Point{ 0.5, 1.5 });
+
+    tCdt.AddHole(tPolyline2);
+
     tCdt.Triangulate();
 
     tCdt.GetTriangles();
+
+    tCdt.WriteToSTL("test.stl");
 }
 #endif // POLY2TRI_BUILD_AS_EXECUTABLE

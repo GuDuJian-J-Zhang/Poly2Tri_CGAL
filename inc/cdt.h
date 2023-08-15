@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <memory>
+#include <string>
 #include "export.h"
 
 namespace p2t_cgal 
@@ -11,6 +12,7 @@ struct Point
 {
     double x{ 0.0f };
     double y{ 0.0f };
+    double z{ 0.0f };
 };
 
 struct Triangle
@@ -58,6 +60,8 @@ public:
      * Get CDT triangles
      */
     POLY2TRI_API const std::vector<Triangle>& GetTriangles();
+
+    POLY2TRI_API bool WriteToSTL(const std::string& filePath) const;
 
 private:
     std::unique_ptr<CDTContext> mpContext{ nullptr };
