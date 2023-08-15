@@ -10,6 +10,21 @@
 
 namespace p2t_cgal
 {
+    static TLoggingCallback gLoggingCallBack = nullptr;
+
+    void SetLoggingCallback(const TLoggingCallback& callback)
+    {
+        gLoggingCallBack = callback;
+    }
+
+    static void InvokeLoggingCallback(const std::string& info)
+    {
+        if (gLoggingCallBack)
+        {
+            gLoggingCallBack(info);
+        }
+    }
+
     struct CDTContext
     {
         typedef CGAL::Exact_predicates_inexact_constructions_kernel       K;
@@ -30,7 +45,7 @@ namespace p2t_cgal
 
         std::vector<p2t_cgal::Triangle> mMesh;
 
-        void Triangulate()
+        bool Triangulate()
         {
             mCdt.clear();
             mMesh.clear();
@@ -71,8 +86,6 @@ namespace p2t_cgal
                 if (get(in_domain, f))
                 {
                     ++count;
-                    auto p = f->vertex(0);
-                    const Point pp = p->point();
                     p2t_cgal::Triangle tTriangle;
                     for (int i = 0; i < 3; ++i)
                     {
@@ -84,6 +97,13 @@ namespace p2t_cgal
                     mMesh.emplace_back(tTriangle);
                 }
             }
+
+            if (0 == count)
+            {
+                InvokeLoggingCallback("Failed to generate triangle mesh for the input polygon !");
+                return false;
+            }
+            return true;
         }
     };
 
@@ -107,9 +127,13 @@ namespace p2t_cgal
         mpContext->mPoints.emplace_back(point);
     }
 
-    void CDT::Triangulate()
+    bool CDT::Triangulate()
     {
-        mpContext->Triangulate();
+        if (!mpContext)
+        {
+            return false;
+        }
+        return mpContext->Triangulate();
     }
 
     const std::vector<Triangle>& CDT::GetTriangles()

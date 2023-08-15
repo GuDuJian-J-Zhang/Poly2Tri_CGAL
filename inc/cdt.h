@@ -3,10 +3,16 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <functional>
 #include "export.h"
 
 namespace p2t_cgal 
 {
+
+// callback
+using TLoggingCallback = std::function<void(const std::string& info)>;
+
+POLY2TRI_API void SetLoggingCallback(const TLoggingCallback& callback);
 
 struct Point
 {
@@ -54,7 +60,7 @@ public:
     /**
      * Triangulate - do this AFTER you've added the polyline, holes, and Steiner points
      */
-    POLY2TRI_API void Triangulate();
+    POLY2TRI_API bool Triangulate();
 
     /**
      * Get CDT triangles
