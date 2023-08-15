@@ -17,6 +17,7 @@ set(INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/inc)
 #target_include_directories(${ProjectName} PUBLIC ${SOURCE_DIR}/inc)
 set(3RDS ${CMAKE_CURRENT_SOURCE_DIR}/3rds)
 
+# add cgal
 include_directories(${INC_DIR})
 include_directories(${INC_DIR}/cgal/Polygon/include)
 include_directories(${INC_DIR}/cgal/Triangulation_2/include)
@@ -43,10 +44,10 @@ include_directories(${INC_DIR}/cgal/Arithmetic_kernel/include)
 include_directories(${INC_DIR}/cgal/Hash_map/include)
 include_directories(${INC_DIR}/cgal/Spatial_sorting/include)
 include_directories(${INC_DIR}/cgal/Property_map/include)
+# end add cgal
 
 # add boost
-set(BOOST_DIR "C:/gudujian/boost_1_82_0/boost_1_82_0")
-include_directories(${BOOST_DIR})
+include_directories(${INC_DIR}/boost_1_82_0)
 # end add boost
 
 file(GLOB_RECURSE SOURCES 
