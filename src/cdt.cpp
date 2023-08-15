@@ -26,6 +26,7 @@ namespace p2t_cgal
 
         std::vector<p2t_cgal::Point> mPloygon;
         std::vector<std::vector<p2t_cgal::Point>> mHoles;
+        std::vector<p2t_cgal::Point> mPoints;
 
         std::vector<p2t_cgal::Triangle> mMesh;
 
@@ -50,6 +51,11 @@ namespace p2t_cgal
                     hole1.push_back(CDTContext::Point(mHoles[i][j].x, mHoles[i][j].y));
                 }
                 mCdt.insert_constraint(hole1.begin(), hole1.end(), true);
+            }
+
+            for (size_t i = 0; i < mPoints.size(); ++i)
+            {
+                mCdt.push_back(CDTContext::Point(mPoints[i].x, mPoints[i].y));
             }
 
             std::unordered_map<Face_handle, bool> in_domain_map;
@@ -98,6 +104,7 @@ namespace p2t_cgal
 
     void CDT::AddPoint(const Point& point)
     {
+        mpContext->mPoints.emplace_back(point);
     }
 
     void CDT::Triangulate()
